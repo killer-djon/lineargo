@@ -58,7 +58,7 @@ struct model* call_train(double* x, double* y, int n_rows, int n_cols, double bi
   param.weight_label = weight_label;
   param.weight = weight;
   param.init_sol = NULL;
-  param.solver_type = 0;
+  param.solver_type = solver_type;
   param.eps = eps;
   param.C = C;
   param.nr_weight = nr_weight;
