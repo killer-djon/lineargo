@@ -129,6 +129,19 @@ func PredictProba(model *Model, X *mat64.Dense) *mat64.Dense {
 	return y
 }
 
+func Labels(model *Model) []int {
+	nrClasses := int(C.get_nr_class(model.cModel))
+	var labels = make([]int, nrClasses)
+	cLabels := mapCInt(labels)
+	C.get_labels(model.cModel, &cLabels[0])
+
+	for i, label := range cLabels {
+		labels[i] = int(label)
+	}
+
+	return labels
+}
+
 func Accuracy(y_true, y_pred *mat64.Dense) float64 {
 	y1 := y_true.ColView(0).RawVector().Data
 	y2 := y_pred.ColView(0).RawVector().Data
