@@ -77,7 +77,7 @@ X, y := linear.ReadLibsvm("heart_scale", true)
 // Please checkout liblinear's doc for the explanation for these parameters.
 model := linear.Train(X, y, -1, linear.L2R_LR, 1.0, 0.1, 0.01, map[int]float64{1: 1, -1: 1})
 
-y_pred:= linear.PredictProba(model, X)
+predictProba:= linear.PredictProba(model, X)
 
 // After you have predicted result 
 // you can resolve accuracy with existing labels from saved model
