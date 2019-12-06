@@ -93,14 +93,14 @@ double* call_predict(const struct model *model_, double* x, int n_rows, int n_co
   return result;
 }
 
-double* call_predict_proba(const struct model *model_, double* x,
-                           int n_rows, int n_cols, int n_classes) {
+void call_predict_proba(const struct model *model_, double* x,
+                           int n_rows, int n_cols, int n_classes, double* result) {
   int i, j;
   struct feature_node** fn_x;
-  double* result;
+  //double* result;
   double* proba;
 
-  result = calloc(n_rows * n_classes, sizeof(double));
+  //result = calloc(n_rows * n_classes, sizeof(double));
   proba = calloc(n_classes, sizeof(double));
 
   fn_x = build_feature_node(x, n_rows, n_cols, -1);
@@ -112,5 +112,4 @@ double* call_predict_proba(const struct model *model_, double* x,
   }
 
   free(proba);
-  return result;
 }
