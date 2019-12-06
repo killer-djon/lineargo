@@ -1,7 +1,6 @@
 #include <linear.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 struct feature_node** build_feature_node(double* x, int n_rows, int n_cols, double bias) {
   struct feature_node** fn_x;
@@ -101,10 +100,8 @@ double* call_predict_proba(const struct model *model_, double* x,
   double* result;
   double* proba;
 
-  //result = calloc(n_rows * n_classes, sizeof(double));
-  //proba = calloc(n_classes, sizeof(double));
-  result = malloc(n_rows * n_classes * sizeof(double));
-  proba = malloc(n_classes * sizeof(double));
+  result = calloc(n_rows * n_classes, sizeof(double));
+  proba = calloc(n_classes, sizeof(double));
 
   fn_x = build_feature_node(x, n_rows, n_cols, -1);
 
