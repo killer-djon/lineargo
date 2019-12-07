@@ -132,9 +132,11 @@ func PredictProba(model *Model, X *mat64.Dense) *mat64.Dense {
 	y := mat64.NewDense(nRows, nrClasses, nil)
 
 	var probaEstimate = make([]float64, nrClasses)
+	doubleEstimate := mapCDouble(probaEstimate)
+
 	C.call_predict_proba(
 		model.cModel, &cX[0], C.int(nRows),
-		C.int(nCols), C.int(nrClasses), (*C.double)(unsafe.Pointer(&probaEstimate[0])))
+		C.int(nCols), C.int(nrClasses), &doubleEstimate[0])
 
 	for i := 0; i < nRows; i++ {
 		y.SetRow(i, probaEstimate[i*nrClasses:(i+1)*nrClasses])
