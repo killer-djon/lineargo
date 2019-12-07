@@ -17,8 +17,11 @@ struct feature_node** build_feature_node(double* x, int n_rows, int n_cols, doub
   }
   n_elems += n_rows; // for bias term
 
-  fn_x = calloc(n_rows, sizeof(struct feature_node *));
-  x_space = calloc(n_elems + n_rows, sizeof(struct feature_node));
+  //fn_x = calloc(n_rows, sizeof(struct feature_node *));
+  //x_space = calloc(n_elems + n_rows, sizeof(struct feature_node));
+
+  fn_x = malloc(n_rows * sizeof(struct feature_node *));
+  x_space = malloc( (n_elems + n_rows) * sizeof(struct feature_node));
 
   x_idx = 0;
   for (i = 0; i < n_rows; i++) {
@@ -83,7 +86,8 @@ double* call_predict(const struct model *model_, double* x, int n_rows, int n_co
   struct feature_node** fn_x;
   double* result;
 
-  result = calloc(n_rows, sizeof(double));
+  //result = calloc(n_rows, sizeof(double));
+  result = malloc(n_rows * sizeof(double));
 
   fn_x = build_feature_node(x, n_rows, n_cols, -1);
 
@@ -97,11 +101,11 @@ double* call_predict_proba(const struct model *model_, double* x,
                            int n_rows, int n_cols, int n_classes) {
   int i, j;
   struct feature_node** fn_x;
-  double* result;
-  double* proba;
+  double* result = malloc(n_rows * n_classes * sizeof(double));
+  double* proba = malloc(n_classes * sizeof(double));
 
-  result = calloc(n_rows * n_classes, sizeof(double));
-  proba = calloc(n_classes, sizeof(double));
+  //result = calloc(n_rows * n_classes, sizeof(double));
+  //proba = calloc(n_classes, sizeof(double));
 
   fn_x = build_feature_node(x, n_rows, n_cols, -1);
 
