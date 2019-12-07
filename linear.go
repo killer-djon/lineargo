@@ -112,6 +112,13 @@ func Predict(model *Model, X *mat64.Dense) *mat64.Dense {
 	return y
 }
 
+func PredictProbaAndLabel(model *Model, X *mat64.Dense) (label *mat64.Dense, probabilities *mat64.Dense) {
+	label = Predict(model, X)
+	probabilities = PredictProba(model, X)
+
+	return label, probabilities
+}
+
 // double predict_probability(const struct model *model_, const struct feature_node *x, double* prob_estimates);
 func PredictProba(model *Model, X *mat64.Dense) *mat64.Dense {
 	nRows, nCols := X.Dims()
