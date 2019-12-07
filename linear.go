@@ -11,7 +11,7 @@ import "C"
 import (
 	"errors"
 	"fmt"
-
+	"unsafe"
 	"github.com/gonum/matrix/mat64"
 )
 
@@ -106,10 +106,21 @@ func Predict(model *Model, X *mat64.Dense) *mat64.Dense {
 	nRows, nCols := X.Dims()
 	cX := mapCDouble(X.RawMatrix().Data)
 	y := mat64.NewDense(nRows, 1, nil)
-	result := doubleToFloats(C.call_predict(
-		model.cModel, &cX[0], C.int(nRows), C.int(nCols)), nRows)
-	y.SetCol(0, result)
+
+	var estimate = make([]float64, 1)
+	C.call_predict(
+		model.cModel, &cX[0], C.int(nRows), C.int(nCols), (*C.double)(unsafe.Pointer(&estimate[0])))
+
+	y.SetCol(0, estimate)
 	return y
+}
+
+// Double prediction with predicted single label and estimate results prediction
+func PredictProbaAndLabel(model *Model, X *mat64.Dense) (*mat64.Dense, *mat64.Dense) {
+	predictedLabel := Predict(model, X)
+	estimatePredicted := PredictProba(model, X)
+
+	return predictedLabel, estimatePredicted
 }
 
 // double predict_probability(const struct model *model_, const struct feature_node *x, double* prob_estimates);
@@ -120,12 +131,15 @@ func PredictProba(model *Model, X *mat64.Dense) *mat64.Dense {
 	cX := mapCDouble(X.RawMatrix().Data)
 	y := mat64.NewDense(nRows, nrClasses, nil)
 
-	result := doubleToFloats(C.call_predict_proba(
-		model.cModel, &cX[0], C.int(nRows), C.int(nCols), C.int(nrClasses)),
-		nRows*nrClasses)
+	var probaEstimate = make([]float64, nrClasses)
+	C.call_predict_proba(
+		model.cModel, &cX[0], C.int(nRows),
+		C.int(nCols), C.int(nrClasses), (*C.double)(unsafe.Pointer(&probaEstimate[0])))
+
 	for i := 0; i < nRows; i++ {
-		y.SetRow(i, result[i*nrClasses:(i+1)*nrClasses])
+		y.SetRow(i, probaEstimate[i*nrClasses:(i+1)*nrClasses])
 	}
+
 	return y
 }
 

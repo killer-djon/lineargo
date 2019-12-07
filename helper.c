@@ -78,29 +78,22 @@ struct model* call_train(double* x, double* y, int n_rows, int n_cols, double bi
 }
 
 
-double* call_predict(const struct model *model_, double* x, int n_rows, int n_cols) {
+void call_predict(const struct model *model_, double* x, int n_rows, int n_cols, double *prob_estimates) {
   int i;
   struct feature_node** fn_x;
-  double* result;
-
-  result = calloc(n_rows, sizeof(double));
-
   fn_x = build_feature_node(x, n_rows, n_cols, -1);
 
   for (i = 0; i < n_rows; ++i) {
-    result[i] = predict(model_, fn_x[i]);
+    prob_estimates[i] = predict(model_, fn_x[i]);
   }
-  return result;
 }
 
-double* call_predict_proba(const struct model *model_, double* x,
-                           int n_rows, int n_cols, int n_classes) {
+void call_predict_proba(const struct model *model_, double* x,
+                           int n_rows, int n_cols, int n_classes, double *prob_estimates) {
   int i, j;
   struct feature_node** fn_x;
-  double* result;
   double* proba;
 
-  result = calloc(n_rows * n_classes, sizeof(double));
   proba = calloc(n_classes, sizeof(double));
 
   fn_x = build_feature_node(x, n_rows, n_cols, -1);
@@ -108,9 +101,8 @@ double* call_predict_proba(const struct model *model_, double* x,
   for (i = 0; i < n_rows; ++i) {
     predict_probability(model_, fn_x[i], proba);
     for (j = 0; j < n_classes; ++j)
-      result[i*n_classes+j] = proba[j];
+      prob_estimates[i*n_classes+j] = proba[j];
   }
 
   free(proba);
-  return result;
 }
