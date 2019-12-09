@@ -112,13 +112,6 @@ func Predict(model *Model, X *mat64.Dense) *mat64.Dense {
 	return y
 }
 
-func PredictProbaAndLabel(model *Model, X *mat64.Dense) (label *mat64.Dense, probabilities *mat64.Dense) {
-	label = Predict(model, X)
-	probabilities = PredictProba(model, X)
-
-	return label, probabilities
-}
-
 // double predict_probability(const struct model *model_, const struct feature_node *x, double* prob_estimates);
 func PredictProba(model *Model, X *mat64.Dense) *mat64.Dense {
 	nRows, nCols := X.Dims()
@@ -130,14 +123,15 @@ func PredictProba(model *Model, X *mat64.Dense) *mat64.Dense {
 	result := doubleToFloats(C.call_predict_proba(
 		model.cModel, &cX[0], C.int(nRows), C.int(nCols), C.int(nrClasses)),
 		nRows*nrClasses)
-	fmt.Println(result)
+
 	for i := 0; i < nRows; i++ {
 		y.SetRow(i, result[i*nrClasses:(i+1)*nrClasses])
 	}
+
 	return y
 }
 
-func GetNrFutures(model *Model) int {
+func NrFutures(model *Model) int {
 	return int(C.get_nr_feature(model.cModel))
 }
 
