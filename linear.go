@@ -11,7 +11,7 @@ import "C"
 import (
 	"errors"
 	"fmt"
-	"unsafe"
+
 	"github.com/gonum/matrix/mat64"
 )
 
@@ -127,15 +127,12 @@ func PredictProba(model *Model, X *mat64.Dense) *mat64.Dense {
 	cX := mapCDouble(X.RawMatrix().Data)
 	y := mat64.NewDense(nRows, nrClasses, nil)
 
-	/*result := doubleToFloats(C.call_predict_proba(
+	result := doubleToFloats(C.call_predict_proba(
 		model.cModel, &cX[0], C.int(nRows), C.int(nCols), C.int(nrClasses)),
-		nRows*nrClasses)*/
-	probs := make([]float64, nrClasses)
-	C.call_predict_proba(model.cModel, &cX[0], C.int(nRows), C.int(nCols), C.int(nrClasses), (*C.double)(unsafe.Pointer(&probs[0])))
-
-	fmt.Println(probs)
+		nRows*nrClasses)
+	fmt.Println(result)
 	for i := 0; i < nRows; i++ {
-		y.SetRow(i, probs[i*nrClasses:(i+1)*nrClasses])
+		y.SetRow(i, result[i*nrClasses:(i+1)*nrClasses])
 	}
 	return y
 }
