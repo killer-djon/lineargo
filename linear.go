@@ -136,6 +136,14 @@ func PredictProba(model *Model, X *mat64.Dense) *mat64.Dense {
 	return y
 }
 
+func GetNrFutures(model *Model) int {
+	return int(C.get_nr_feature(model.cModel))
+}
+
+func NrClasses(model *Model) int {
+	return int(C.get_nr_class(model.cModel))
+}
+
 func Labels(model *Model) []float64 {
 	nrClasses := int(C.get_nr_class(model.cModel))
 	var labels = make([]int, nrClasses)
