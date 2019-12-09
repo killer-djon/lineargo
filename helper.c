@@ -98,17 +98,16 @@ double* call_predict(const struct model *model_, double* x, int n_rows, int n_co
   return result;
 }
 
-double* call_predict_proba(const struct model *model_, double* x,
-                           int n_rows, int n_cols, int n_classes) {
+void call_predict_proba(const struct model *model_, double* x,
+                           int n_rows, int n_cols, int n_classes, double* result) {
   int i, j;
   struct feature_node** fn_x;
   //double* result = malloc(n_rows * n_classes * sizeof(double));
   //double* proba = malloc(n_classes * sizeof(double));
   double* proba;
-  double* result;
 
-  result = malloc((size_t) (n_rows * n_classes) * sizeof(double));
   proba = malloc((size_t) n_classes * sizeof(double));
+  //result = malloc((size_t) (n_rows * n_classes) * sizeof(double));
 
 //  result = calloc(n_rows * n_classes, sizeof(double));
 //  proba = calloc(n_classes, sizeof(double));
@@ -123,5 +122,4 @@ double* call_predict_proba(const struct model *model_, double* x,
   }
 
   free(proba);
-  return result;
 }
