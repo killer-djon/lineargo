@@ -2,6 +2,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#ifdef CV_OMP
+#include <omp.h>
+#endif
+
 struct feature_node** build_feature_node(double* x, int n_rows, int n_cols, double bias) {
   struct feature_node** fn_x;
   struct feature_node* x_space;
@@ -81,7 +85,10 @@ struct model* call_train(double* x, double* y, int n_rows, int n_cols, double bi
 double* call_predict(const struct model *model_, double* x, int n_rows, int n_cols) {
   int i;
   struct feature_node** fn_x;
-  double* result = malloc(n_rows * sizeof(double));
+  double* result;
+  //double* result = malloc(n_rows * sizeof(double));
+
+  result = malloc((size_t) n_rows * sizeof(double));
 
   fn_x = build_feature_node(x, n_rows, n_cols, -1);
 
@@ -95,15 +102,24 @@ double* call_predict_proba(const struct model *model_, double* x,
                            int n_rows, int n_cols, int n_classes) {
   int i, j;
   struct feature_node** fn_x;
-  double* result = malloc(n_rows * n_classes * sizeof(double));
-  double* proba = malloc(n_classes * sizeof(double));
+  //double* result = malloc(n_rows * n_classes * sizeof(double));
+  //double* proba = malloc(n_classes * sizeof(double));
+  double* proba;
+  double* result;
+
+  result = malloc((size_t) (n_rows * n_classes) * sizeof(double));
+  proba = malloc((size_t) n_classes * sizeof(double));
+
+//  result = calloc(n_rows * n_classes, sizeof(double));
+//  proba = calloc(n_classes, sizeof(double));
 
   fn_x = build_feature_node(x, n_rows, n_cols, -1);
 
   for (i = 0; i < n_rows; ++i) {
     predict_probability(model_, fn_x[i], proba);
-    for (j = 0; j < n_classes; ++j)
+    for (j = 0; j < n_classes; ++j) {
       result[i*n_classes+j] = proba[j];
+    }
   }
 
   free(proba);
