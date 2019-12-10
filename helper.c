@@ -81,20 +81,19 @@ struct model* call_train(double* x, double* y, int n_rows, int n_cols, double bi
   return train(&prob, &param);
 }
 
-double* call_predict_values(const struct model *model_, double* x,int n_rows, int n_cols,  double *dec_values)
+void call_predict_values(const struct model *model_, double* x, int n_rows, int n_cols, int n_classes, double* proba, double* result)
 {
-  int i;
+  int i, j;
   struct feature_node** fn_x;
-  double* result;
-  result = malloc((size_t) n_rows * sizeof(double));
 
   fn_x = build_feature_node(x, n_rows, n_cols, -1);
 
   for (i = 0; i < n_rows; ++i) {
-      result[i] = predict_values(model_, fn_x[i], dec_values);
+    predict_probability(model_, fn_x[i], proba);
+    for (j = 0; j < n_classes; ++j){
+      result[i*n_classes+j] = proba[j];
     }
-
-  return result;
+  }
 }
 
 double* call_predict(const struct model *model_, double* x, int n_rows, int n_cols) {

@@ -112,17 +112,22 @@ func Predict(model *Model, X *mat64.Dense) *mat64.Dense {
 	return y
 }
 
-//double* call_predict_values(const struct model *model_, double* x,int n_rows, int n_cols,  double *dec_values)
+//void call_predict_values(const struct model *model_, double* x, int n_rows, int n_cols, int n_classes)
+//result = (double *)malloc(n_rows * n_classes * sizeof(double));
+//proba = (double *)malloc(n_classes * sizeof(double));
 func PredictValues(model *Model, X *mat64.Dense) {
 	nRows, nCols := X.Dims()
+	cX := mapCDouble(X.RawMatrix().Data)
 	nrClasses := int(C.get_nr_class(model.cModel))
 
-	cX := mapCDouble(X.RawMatrix().Data)
 	probs := make([]float64, nrClasses)
-	callPredictData := C.call_predict_values(model.cModel, &cX[0], C.int(nRows), C.int(nCols), (*C.double)(unsafe.Pointer(&probs[0])))
+	result := make([]float64, nRows*nrClasses)
 
-	result := doubleToFloats(callPredictData, nRows*nrClasses)
-	fmt.Println("Predict values", result)
+	C.call_predict_values(model.cModel, &cX[0], C.int(nRows), C.int(nCols), C.int(nrClasses),
+		(*C.double)(unsafe.Pointer(&probs[0])), (*C.double)(unsafe.Pointer(&result[0])))
+
+
+	fmt.Println("Predict values", result, probs)
 }
 
 // double predict_probability(const struct model *model_, const struct feature_node *x, double* prob_estimates);

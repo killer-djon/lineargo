@@ -12,6 +12,6 @@ double* call_predict(const struct model *model_, const double* x, int nCols, int
 double* call_predict_proba(const struct model *model_, double* x,
                            int n_rows, int n_cols, int n_classes, double* probability);
 
-double* call_predict_values(const struct model *model_, double* x,int n_rows, int n_cols,  double *dec_values);
+void call_predict_values(const struct model *model_, double* x, int n_rows, int n_cols, int n_classes, double* proba, double* result);
 
 #endif
