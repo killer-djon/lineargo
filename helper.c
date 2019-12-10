@@ -98,21 +98,25 @@ double* call_predict(const struct model *model_, double* x, int n_rows, int n_co
 }
 
 double* call_predict_proba(const struct model *model_, double* x,
-                           int n_rows, int n_cols, int n_classes) {
+                           int n_rows, int n_cols, int n_classes, double* probability) {
   int i, j;
   struct feature_node** fn_x;
   double* proba;
   double* result;
 
-  result = malloc((size_t) (n_rows * n_classes) * sizeof(double));
-  proba = malloc((size_t) n_classes * sizeof(double));
+  //(double *)malloc(n_rows * n_classes * sizeof(double));
+  result = (double *)malloc(n_rows * n_classes * sizeof(double));
+  proba = (double *)malloc(n_classes * sizeof(double));
+  //proba = malloc((size_t) n_classes * sizeof(double));
 
   fn_x = build_feature_node(x, n_rows, n_cols, -1);
 
   for (i = 0; i < n_rows; ++i) {
     predict_probability(model_, fn_x[i], proba);
-    for (j = 0; j < n_classes; ++j)
+    for (j = 0; j < n_classes; ++j){
       result[i*n_classes+j] = proba[j];
+      probability[i*n_classes+j] = proba[j];
+    }
   }
 
   free(proba);
