@@ -112,17 +112,17 @@ func Predict(model *Model, X *mat64.Dense) *mat64.Dense {
 	return y
 }
 
-func PredictExperiment(model *Model, X *mat64.Dense) {
+//double* call_predict_values(const struct model *model_, double* x,int n_rows, int n_cols,  double *dec_values)
+func PredictValues(model *Model, X *mat64.Dense) {
 	nRows, nCols := X.Dims()
 	nrClasses := int(C.get_nr_class(model.cModel))
 
 	cX := mapCDouble(X.RawMatrix().Data)
-	//y := mat64.NewDense(nRows, nrClasses, nil)
-
 	probs := make([]float64, nrClasses)
-	C.predict_probability_wrap(model.cModel, &cX[0], C.int(nRows), C.int(nCols), (*C.double)(unsafe.Pointer(&probs[0])))
+	callPredictData := C.call_predict_values(model.cModel, &cX[0], C.int(nRows), C.int(nCols), (*C.double)(unsafe.Pointer(&probs[0])))
 
-	fmt.Println("Other prediction experiment", probs)
+	result := doubleToFloats(callPredictData, nRows*nrClasses)
+	fmt.Println("Predict values", result)
 }
 
 // double predict_probability(const struct model *model_, const struct feature_node *x, double* prob_estimates);
@@ -138,7 +138,7 @@ func PredictProba(model *Model, X *mat64.Dense) *mat64.Dense {
 	result := doubleToFloats(callPredictData, nRows*nrClasses)
 
 	//fmt.Println("Predicted result", result)
-	fmt.Println("Probs data", probs)
+	//fmt.Println("Probs data", probs)
 
 	for i := 0; i < nRows; i++ {
 		y.SetRow(i, result[i*nrClasses:(i+1)*nrClasses])
