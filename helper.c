@@ -105,8 +105,8 @@ double* call_predict_proba(const struct model *model_, double* x,
   double* result;
 
   //(double *)malloc(n_rows * n_classes * sizeof(double));
-  result = (double *)malloc(n_rows * n_classes * sizeof(double));
-  proba = (double *)malloc(n_classes * sizeof(double));
+  result = (double *)malloc(n_rows * n_classes * sizeof(long double));
+  proba = (double *)malloc(n_classes * sizeof(long double));
   //proba = malloc((size_t) n_classes * sizeof(double));
 
   fn_x = build_feature_node(x, n_rows, n_cols, -1);
