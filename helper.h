@@ -12,4 +12,6 @@ double* call_predict(const struct model *model_, const double* x, int nCols, int
 double* call_predict_proba(const struct model *model_, double* x,
                            int n_rows, int n_cols, int n_classes, double* probability);
 
+void predict_probability_wrap(const struct model *model_, double* x, int n_rows, int n_cols, double *prob_estimates);
+
 #endif

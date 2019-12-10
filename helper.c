@@ -97,6 +97,17 @@ double* call_predict(const struct model *model_, double* x, int n_rows, int n_co
   return result;
 }
 
+void predict_probability_wrap(const struct model *model_, double* x, int n_rows, int n_cols, double *prob_estimates)
+{
+  int i;
+  struct feature_node** fn_x;
+  fn_x = build_feature_node(x, n_rows, n_cols, -1);
+
+  for (i = 0; i < n_rows; ++i) {
+    predict_probability(model_, fn_x[i], prob_estimates);
+  }
+}
+
 double* call_predict_proba(const struct model *model_, double* x,
                            int n_rows, int n_cols, int n_classes, double* probability) {
   int i, j;

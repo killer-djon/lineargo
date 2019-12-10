@@ -112,6 +112,19 @@ func Predict(model *Model, X *mat64.Dense) *mat64.Dense {
 	return y
 }
 
+func PredictExperiment(model *Model, X *mat64.Dense) {
+	nRows, nCols := X.Dims()
+	nrClasses := int(C.get_nr_class(model.cModel))
+
+	cX := mapCDouble(X.RawMatrix().Data)
+	//y := mat64.NewDense(nRows, nrClasses, nil)
+
+	probs := make([]float64, nrClasses)
+	C.predict_probability_wrap(model.cModel, &cX[0], C.int(nRows), C.int(nCols), (*C.double)(unsafe.Pointer(&probs[0])))
+
+	fmt.Println("Other prediction experiment", probs)
+}
+
 // double predict_probability(const struct model *model_, const struct feature_node *x, double* prob_estimates);
 func PredictProba(model *Model, X *mat64.Dense) *mat64.Dense {
 	nRows, nCols := X.Dims()
@@ -124,7 +137,7 @@ func PredictProba(model *Model, X *mat64.Dense) *mat64.Dense {
 	callPredictData := C.call_predict_proba(model.cModel, &cX[0], C.int(nRows), C.int(nCols), C.int(nrClasses), (*C.double)(unsafe.Pointer(&probs[0])))
 	result := doubleToFloats(callPredictData, nRows*nrClasses)
 
-	fmt.Println("Predicted result", result)
+	//fmt.Println("Predicted result", result)
 	fmt.Println("Probs data", probs)
 
 	for i := 0; i < nRows; i++ {
